@@ -22,7 +22,7 @@ version: '3'
 
 services:
   labs:
-    hostname: TEENSchedule
+    hostname: SecureLoop
     image: timelooptopk-accelergy-pytorch:latest
     ports:
       - "8888:8888"
