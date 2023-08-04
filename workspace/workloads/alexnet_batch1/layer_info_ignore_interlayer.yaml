@@ -1,0 +1,62 @@
+1:
+  dependent_next_layer: []
+  dependent_prev_layer: []
+  layer_id_for_timeloop: 1
+  next_layer:
+  - 2
+  prev_layer: []
+2:
+  dependent_next_layer: []
+  dependent_prev_layer: []
+  layer_id_for_timeloop: 2
+  next_layer:
+  - 3
+  prev_layer:
+  - 1
+3:
+  dependent_next_layer: []
+  dependent_prev_layer: []
+  layer_id_for_timeloop: 3
+  next_layer:
+  - 4
+  prev_layer:
+  - 2
+4:
+  dependent_next_layer: []
+  dependent_prev_layer: []
+  layer_id_for_timeloop: 4
+  next_layer:
+  - 5
+  prev_layer:
+  - 3
+5:
+  dependent_next_layer: []
+  dependent_prev_layer: []
+  layer_id_for_timeloop: 5
+  next_layer:
+  - 6
+  prev_layer:
+  - 4
+6:
+  dependent_next_layer: []
+  dependent_prev_layer: []
+  layer_id_for_timeloop: 6
+  next_layer:
+  - 7
+  prev_layer:
+  - 5
+7:
+  dependent_next_layer: []
+  dependent_prev_layer: []
+  layer_id_for_timeloop: 7
+  next_layer:
+  - 8
+  prev_layer:
+  - 6
+8:
+  dependent_next_layer: []
+  dependent_prev_layer: []
+  layer_id_for_timeloop: 8
+  next_layer: []
+  prev_layer:
+  - 7

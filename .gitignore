@@ -1,0 +1,17 @@
+.bashrc
+.bash_history
+.profile
+.config/
+.local/
+.cache/
+
+*.ipython/
+*.pyc
+*.csv
+*.pdf
+
+.__pycache__/
+.ipynb_checkpoints/
+.jupyter/
+
+workspace/designs/eyeriss_like/ver*
