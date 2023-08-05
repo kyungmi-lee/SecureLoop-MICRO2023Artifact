@@ -8,10 +8,11 @@
 
 # Run as follows:
 #
-#    1) Put this file in an otherwise empty directory
-#    2) Cd to the directory containing this file
-#    3) Change USER_UID and USER_GID to the desired owner of your files (echo $UID )
-#    4) Run the following command:
+#    1) Copy this file to docker-compose.yaml
+#    2) In docker-compose.yaml
+#         - change USER_UID and USER_GID to the owner of your files (echo $UID )
+#         - disable authentication token (optional)
+#    3) Run the following command:
 #
 #        % docker-compose up
 #
@@ -23,7 +24,7 @@ version: '3'
 services:
   labs:
     hostname: SecureLoop
-    image: timelooptopk-accelergy-pytorch:latest
+    image: timeloopaccelergy/timeloop-accelergy-pytorch:secureloop-amd64
     ports:
       - "8888:8888"
     volumes:
@@ -31,3 +32,4 @@ services:
     environment:
       - USER_UID=1000
       - USER_GID=1000
+#      - JUPYTER_SWITCHES=--LabApp.token=''
