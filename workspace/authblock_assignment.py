@@ -338,7 +338,8 @@ def PartialUpdateAuthBlockAssignment(n_layers, layer_info, \
                                                      cryptographic_action_count_dict, rehash_action_count_dict, \
                                                      AESGCM_energy_profile, AESGCM_latency_profile, MEMORY_READ_PER_BIT_ENERGY, \
                                                      MEMORY_WRITE_PER_BIT_ENERGY, \
-                                                     partial_update=True, cost_dict_given=prev_cost_dict, partial_update_layer_list=subset_layers)
+                                                     partial_update=True if len(subset_layers) > 0 else False, \
+                                                     cost_dict_given=prev_cost_dict, partial_update_layer_list=subset_layers)
 
     return cost_dict, rehash_cost_dict, block_info_dict
     
