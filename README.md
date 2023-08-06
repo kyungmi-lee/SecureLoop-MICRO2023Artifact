@@ -20,6 +20,17 @@ docker-compose up
 
 It launches the Jupyterlab hosted at `localhost:8888`. Note that depending on the docker environment, the IP address can be different from `localhost`.
 
+
+### Run accelergyTables 
+
+For the first time running this repo, open a terminal from Jupyterlab, and run:
+
+```
+accelergyTables -r effective_dram_tables/
+```
+This is only required for the first time, and does not need to be repeated. This step ensures that Accelergy recognizes the custom energy values for off-chip traffic including the cryptographic operations. 
+
+
 ## Reproducing Figure 11
 
 `run_all.ipynb` includes the step-by-step instructions to reproduce the results in Figure 11. Key steps are:
@@ -35,7 +46,7 @@ The DNN accelerator / cryptographic engine setup is defined to match the one we 
 
 ### Notes on reproducing the results
 
-SecureLoop's scheduling algorithm involves random processes (i.e., random pruning for timeloop, and simulated annealing). Thus, the result might not exactly match - however, the result should be within a close range to the values reported in the paper. For example, for the MobilenetV2 workload, using *Crypt-Opt-Cross* search algorithm results in the normalized latency of 9.83 in the paper. From multiple runs, we observe that this value can vary from 9.81 to 9.90. 
+SecureLoop's scheduling algorithm involves random processes (i.e., random pruning for timeloop, and simulated annealing). Thus, the result might not exactly match - however, the result should be within a close range to the values reported in the paper. For example, for the MobilenetV2 workload, using *Crypt-Opt-Cross* search algorithm results in the normalized latency of 9.83 in the paper. From multiple runs, we observe that this value can vary from 9.70 to 9.90. 
 
 ## Code Organization
 
