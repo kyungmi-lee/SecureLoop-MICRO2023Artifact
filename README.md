@@ -6,6 +6,8 @@ This repository includes all source codes of SecureLoop and a Jupyter notebook t
 
 ## Setup  
 
+### Using the pre-built docker image
+
 First, get the docker app (https://docs.docker.com/get-docker/). After cloning this repository, copy `docker-compose.yaml.template` to `docker-compose.yaml`:
 
 ```
@@ -30,6 +32,12 @@ accelergyTables -r effective_dram_tables/
 ```
 This is only required for the first time, and does not need to be repeated. This step ensures that Accelergy recognizes the custom energy values for off-chip traffic including the cryptographic operations. 
 
+
+### (Optional) Build docker images from the source
+
+Instead of pulling the docker images from the dockerhub, you can build docker images from the sources directly. First, clone [the micro23-artifact-secureloop branch of the accelergy-timeloop-infrastructure repository](https://github.com/Accelergy-Project/accelergy-timeloop-infrastructure/tree/micro23-artifact-secureloop), and build a docker image. Please read [SecureLoop-specific instructions](https://github.com/Accelergy-Project/accelergy-timeloop-infrastructure/blob/micro23-artifact-secureloop/README-secureloop.md) before building. This image supports Timeloop with top-k search support and accelergy. 
+
+Next, clone [the micro23-artifact-secureloop branch of the timeloop-accelergy-pytorch repository](https://github.com/Accelergy-Project/timeloop-accelergy-pytorch/tree/micro23-artifact-secureloop), and build a docker image. This image builds upon the `accelergy-timeloop-infrastructure:secureloop` docker image from the previous step, and supports PyTorch and Jupyterlab. 
 
 ## Reproducing Figure 11
 
