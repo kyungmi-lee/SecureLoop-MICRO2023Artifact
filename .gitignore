@@ -10,6 +10,7 @@ docker-compose.yaml
 *.pyc
 *.csv
 *.pdf
+*.python_history
 
 .__pycache__/
 .ipynb_checkpoints/
