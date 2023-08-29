@@ -90,7 +90,7 @@ If you want to use a different template (e.g., architectures with different data
 
 ### Run scheduling
 
-Run scheduling algorithms for secure accelerator configurations using [`workspace/scheduler.py`](`./workspace/scheduler.py`):
+Run scheduling algorithms for secure accelerator configurations using [`workspace/scheduler.py`](./workspace/scheduler.py):
 
 ```bash
 python3 scheduler.py --arch [architecture config path] --workload [workload name] --scheduler [scheduler name] --topk [integer k for top-k search] 
