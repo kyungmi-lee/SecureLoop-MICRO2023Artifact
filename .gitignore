@@ -8,7 +8,6 @@ docker-compose.yaml
 
 *.ipython/
 *.pyc
-*.csv
 *.pdf
 *.python_history
 

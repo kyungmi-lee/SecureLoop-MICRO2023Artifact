@@ -1,0 +1,4 @@
+﻿technology,width,action,energy,area,comment
+effective_hbm2_aesgcm_11cycle,128,read,776.16,0,"Utsav Banerjee, Master's Thesis, MIT; Pipelined 11-cycle AES + 8-cycle GFMult for 128bit datapath"
+effective_hbm2_aesgcm_11cycle,128,write,776.16,0,
+effective_hbm2_aesgcm_11cycle,128,idle,0,0,

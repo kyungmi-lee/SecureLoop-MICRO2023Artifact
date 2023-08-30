@@ -1,0 +1,4 @@
+﻿technology,width,action,energy,area,comment
+effective_lpddr4_aesgcm_336cycle,128,read,2137.6,0,"Utsav Banerjee, Master's Thesis, MIT; Pipelined 336-cycle AES + 128-cycle GFMult for 128bit datapath"
+effective_lpddr4_aesgcm_336cycle,128,write,2137.6,0,
+effective_lpddr4_aesgcm_336cycle,128,idle,0,0,
