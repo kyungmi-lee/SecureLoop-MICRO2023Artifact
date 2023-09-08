@@ -19,3 +19,4 @@ docker-compose.yaml
 
 workspace/designs/eyeriss_like/ver*
 workspace/figures/*
+workspace/plot_fig11.ipynb

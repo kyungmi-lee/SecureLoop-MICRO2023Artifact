@@ -45,16 +45,16 @@ def main():
     configuration_dict['DRAM_READ_BANDWIDTH'] = args.dram_read_bandwidth
     configuration_dict['DRAM_WRITE_BANDWIDTH'] = args.dram_write_bandwidth
     configuration_dict['SRAM_SHARED'] = args.sram_shared
-    configuration_dict['SRAM_DEPTH'] = args.sram_depth
-    configuration_dict['SRAM_WIDTH'] = args.sram_width
-    configuration_dict['SRAM_BANKS'] = args.sram_banks
-    configuration_dict['SRAM_READ_BANDWIDTH'] = args.sram_read_bandwidth
-    configuration_dict['SRAM_WRITE_BANDWIDTH'] = args.sram_write_bandwidth
+    configuration_dict['SRAM_DEPTH'] = [int(x) for x in args.sram_depth]
+    configuration_dict['SRAM_WIDTH'] = [int(x) for x in args.sram_width]
+    configuration_dict['SRAM_BANKS'] = [int(x) for x in args.sram_banks]
+    configuration_dict['SRAM_READ_BANDWIDTH'] = [int(x) for x in args.sram_read_bandwidth]
+    configuration_dict['SRAM_WRITE_BANDWIDTH'] = [int(x) for x in args.sram_write_bandwidth]
     configuration_dict['PE_X'] = args.pe_x
     configuration_dict['PE_Y'] = args.pe_y
     configuration_dict['PE_SPAD_SHARED'] = args.pe_spad_shared
-    configuration_dict['PE_SPAD_DEPTH'] = args.pe_spad_depth
-    configuration_dict['PE_SPAD_WIDTH'] = args.pe_spad_width
+    configuration_dict['PE_SPAD_DEPTH'] = [int(x) for x in args.pe_spad_depth]
+    configuration_dict['PE_SPAD_WIDTH'] = [int(x) for x in args.pe_spad_width]
 
     crypt_engine_type = None
     if args.crypt_engine == 'AES-GCM':
@@ -74,7 +74,7 @@ def main():
         raise NotImplementedError()
     configuration_dict['CRYPT_ENGINE_CYCLE_PER_BLOCK'] = crypt_engine_cycle_per_block
     configuration_dict['CRYPT_ENGINE_SHARED'] = args.crypt_engine_shared
-    configuration_dict['CRYPT_ENGINE_COUNT'] = args.crypt_engine_count
+    configuration_dict['CRYPT_ENGINE_COUNT'] = [int(x) for x in args.crypt_engine_count]
     configuration_dict['EFFECTIVE_CONSERVATIVE'] = True
     
     # Create directory for this configuration if it doesn't exist already

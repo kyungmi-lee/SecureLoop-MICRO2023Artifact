@@ -210,4 +210,104 @@ def plot_fig11(arch, workload):
                             np.asarray([cts_traffic[1], cos_traffic[1], coc_traffic[1]]).reshape((1, 3))], \
                             ['Rehash', 'Redundant', 'Hash'], True, workload, False, True)
     plt.savefig('figures/{}_b.pdf'.format(workload), bbox_inches='tight')
+
+def plot_fig14(archs, arch_names, workload, mode='fig14'):
+    base_dir = Path(os.getcwd())
+    timeloop_dirs = archs
+    top_dir = 'workloads'
+    sub_dir = '{}_batch{}'.format(workload, 1)
     
+    if workload == 'alexnet':
+        net = model_zoo.alexnet(pretrained=False)
+        layers_exclude_from_search = [6, 7, 8]
+    elif workload == 'resnet18':
+        net = model_zoo.resnet18(pretrained=False)
+        layers_exclude_from_search = []
+    elif workload == 'mobilenet_v2':
+        net = model_zoo.mobilenet_v2(pretrained=False)
+        layers_exclude_from_search = []
+    
+    input_size = (3, 224, 224)
+    batch_size = 1
+    
+    n_layers, unique_layers, layer_info, layer_info_ignore_interlayer = extract_layer_info(net, input_size, base_dir, top_dir, sub_dir)
+    
+    cost_dicts = []
+    rehash_cost_dicts = []
+    for timeloop_dir in timeloop_dirs:
+        evaluation_folder = 'joint_topk'
+        dump_dst = os.path.join(base_dir, timeloop_dir, evaluation_folder, sub_dir, 'crypt-opt-cross_cost.yaml')
+        with open(dump_dst, 'r') as f:
+            dump_dict = yaml.unsafe_load(f)
+            cost_dicts.append(dump_dict['cost_dict'])
+            rehash_cost_dicts.append(dump_dict['rehash_cost_dict'])
+    
+    baseline_latencies = {}
+    for idx, timeloop_dir in enumerate(timeloop_dirs):
+        if 'pipeline' not in arch_names[idx]:
+            continue
+        baseline_latency = 0
+        baseline_energy = 0
+        for layer_id in range(1, n_layers + 1):
+            if layer_id in layers_exclude_from_search:
+                continue
+            layer_id_for_timeloop = layer_info[layer_id]['layer_id_for_timeloop']
+            stats_file = os.path.join(base_dir, timeloop_dir, 'baseline_evaluation', sub_dir, "layer{}".format(layer_id_for_timeloop), \
+                                      "timeloop-model.stats.txt")
+            with open(stats_file, 'r') as f:
+                lines = f.read().split('\n')[-200:]
+                for line in lines:
+                    if line.startswith('Energy'):
+                        energy = eval(line.split(': ')[1].split(' ')[0]) * float(10**6) # micro to pico
+                    elif line.startswith('Cycles'):
+                        cycle = eval(line.split(': ')[1])
+                        
+            baseline_latency += cycle
+    
+        baseline_latencies[arch_names[idx]] = baseline_latency
+    
+    latency = {}
+    for idx in range(len(archs)):
+        coc_latency, coc_energy, coc_traffic = calculate_total_stats(cost_dicts[idx], rehash_cost_dicts[idx], n_layers, layers_exclude_from_search)
+        latency[arch_names[idx]] = coc_latency
+    
+    # Draw figures
+    if mode == 'fig14':
+        bar_labels = ['14x12', '14x24', '28x24']
+    elif mode == 'fig15':
+        bar_labels = ['16kB', '32kB', '131kB']
+    group_names = ['baseline', 'pipeline', 'parallel']
+    
+    # Set the bar width
+    bar_width = 0.27
+    
+    # Set the positions of the bars on the x-axis
+    r1 = np.arange(len(bar_labels))
+    r2 = [x + bar_width for x in r1]
+    r3 = [x + bar_width for x in r2]
+    
+    def create_grouped_bar_plot(ax, data, group_names, bar_labels, show_ylabel):
+        ax.bar(r1, data[0], color=plt.cm.bone(0.2), width=bar_width-0.03, edgecolor='black', label=group_names[0])
+        ax.bar(r2, data[1], color=plt.cm.bone(0.5), width=bar_width-0.03, edgecolor='black', label=group_names[1])
+        ax.bar(r3, data[2], color=plt.cm.bone(0.8), width=bar_width-0.03, edgecolor='black', label=group_names[2])
+        ax.yaxis.grid(True, linestyle='--', which='major', color='grey', alpha=0.5)
+        if show_ylabel:
+            ax.set_ylabel('#Cycles', fontsize=17)
+        ax.set_xticks([r + bar_width for r in range(len(bar_labels))])
+        ax.set_xticklabels(bar_labels, fontsize=17)
+    
+    # Create figure and subplots
+    fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(5, 4))
+    
+    data = []
+    for group in group_names:
+        temp_data = []
+        for pe in bar_labels:
+            if group == 'baseline':
+                temp_data.append(baseline_latencies['{}_pipeline'.format(pe)])
+            else:
+                temp_data.append(latency['{}_{}'.format(pe, group)])
+        data.append(np.asarray(temp_data))
+        
+    create_grouped_bar_plot(axs, data, group_names, bar_labels, True)
+    plt.savefig('figures/{}_fig14.pdf'.format(workload), bbox_inches='tight')
