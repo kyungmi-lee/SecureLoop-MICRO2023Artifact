@@ -68,8 +68,8 @@ def extract_layer_info(net, input_size, base_dir, top_dir, sub_dir):
             info['next_layer'] = []
             info['dependent_prev_layer'] = []
             info['dependent_next_layer'] = []
-            layer_info[layer_idx] = info
-            layer_info_ignore_interlayer[layer_idx] = info
+            layer_info[layer_idx] = copy.deepcopy(info)
+            layer_info_ignore_interlayer[layer_idx] = copy.deepcopy(info)
     
         for layer_idx in range(1, n_layers + 1):
             consecutive = consecutive_dict[layer_idx]
@@ -79,10 +79,15 @@ def extract_layer_info(net, input_size, base_dir, top_dir, sub_dir):
             for i in consecutive:
                 layer_info[i]['prev_layer'].append(layer_idx)
                 layer_info_ignore_interlayer[i]['prev_layer'].append(layer_idx)
-            if len(dependent) > 0 and not ignore_interlayer:
+            if len(dependent) > 0:
                 layer_info[layer_idx]['dependent_next_layer'].extend(dependent)   
                 for i in dependent:
                     layer_info[i]['dependent_prev_layer'].append(layer_idx)
+
+        with open(workload_path_1, 'w') as f:
+            _ = yaml.dump(layer_info, f)
+        with open(workload_path_2, 'w') as f:
+            _ = yaml.dump(layer_info_ignore_interlayer, f)
 
     return n_layers, unique_layers, layer_info, layer_info_ignore_interlayer
 
@@ -473,11 +478,12 @@ def main():
     # define options
     parser = argparse.ArgumentParser()
     parser.add_argument('--arch', type=str, required=True, help='a path to the architecture description folder (e.g., designs/eyeriss_like/ver0/)')
-    parser.add_argument('--workload', choices=['alexnet', 'resnet18', 'mobilenet_v2'], required=True, help='a DNN workload: alexnet (first 5 conv layers), resnet18, and mobilenet_v2')
+    parser.add_argument('--workload', choices=['alexnet', 'resnet18', 'mobilenet_v2', 'debugnet'], required=True, help='a DNN workload: alexnet (first 5 conv layers), resnet18, and mobilenet_v2')
     parser.add_argument('--workload_batch_size', default=1, type=int, help='batch size for the workload (default: 1)')
     parser.add_argument('--scheduler', choices=['baseline-timeloop-only', 'crypt-tile-single', 'crypt-opt-single', 'crypt-opt-cross'], required=True, help='scheduler algorithm: base-tile-single, crypt-tile-single, crypt-opt-single, and crypt-opt-cross')
     parser.add_argument('--topk', type=int, default=6, help='k for the top-k loopnest search')
     parser.add_argument('--rerun_timeloop', default=False, action='store_true', help='rerun Timeloop search even if the results form the previous run are found')
+    parser.add_argument('--dump_name', default=None, help='additional tag for dump yaml file name')
 
     args = parser.parse_args()
 
@@ -490,12 +496,27 @@ def main():
     if args.workload == 'alexnet':
         net = model_zoo.alexnet(pretrained=False)
         layers_exclude_from_search = [6, 7, 8]
+        exception_module_names = []
     elif args.workload == 'resnet18':
         net = model_zoo.resnet18(pretrained=False)
         layers_exclude_from_search = []
+        exception_module_names = []
     elif args.workload == 'mobilenet_v2':
         net = model_zoo.mobilenet_v2(pretrained=False)
         layers_exclude_from_search = []
+        exception_module_names = []
+    elif args.workload == 'debugnet':
+        class debugnet(nn.Module):
+            def __init__(self,):
+                super().__init__()
+                self.conv1 = nn.Conv2d(3, 8, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+                self.conv2 = nn.Conv2d(8, 16, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            def forward(self, x):
+                x = F.relu(self.conv1(x))
+                return self.conv2(x)
+        net = debugnet()
+        layers_exclude_from_search = []
+        exception_module_names = []
 
     input_size = (3, 224, 224)
     batch_size = args.workload_batch_size
@@ -569,7 +590,8 @@ def main():
                         configuration_dict, mode=mode, \
                         joint=joint, generate_summary=True, return_cost_dict=True)
 
-    dump_dst = os.path.join(base_dir, timeloop_dir, evaluation_folder, sub_dir, '{}_cost.yaml'.format(args.scheduler))
+    yaml_file_name = '{}_cost.yaml'.format(args.scheduler) if args.dump_name is None else '{}_cost_{}.yaml'.format(args.scheduler, args.dump_name)
+    dump_dst = os.path.join(base_dir, timeloop_dir, evaluation_folder, sub_dir, yaml_file_name)
     with open(dump_dst, 'w') as f:
         _ = yaml.dump({'cost_dict': cost_dict, 'rehash_cost_dict': rehash_cost_dict, 'block_info_dict': block_info_dict}, f)
 
